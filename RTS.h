@@ -3,38 +3,23 @@
 
 #include <iostream>
 #include <string>
-#include "Scheduler.h
+#include "Clock.h"
+#include "Process.h"
+#include <queue>
 
-# initial sort at beginning is the most important
-
-using namespace std;
-
-class RST : public Scheduler{
+class RTS
+{
 public:
-	RTS() : Scheduler() {};
-	RTS(int queues, int aTime, int quant, int deadline);
-	~RTS() {};
 
+	int numQueues, at, quantum, totalWait, totalTurnaround, startTime, endTime, numProcesses;
+	process *processArray, *currentP;
+	std::queue<Process> *queueList;
+	std::queue<Process> curQueue;
+	RTS(int queues, int aTime, int quant, Process *pArray);
+	void scheduleProcesses();
+	void runProcess (Process *currentProcess, int q, int quant, int currentRemaining);
+	void initializeQL(std::queue<Process>ql);
+	Clock c;
+};
 
-	void run();
-	virtual void scheduleProcesses();
-	//
-	void runProcess(Process * currentProcess, int q, int quant, int currentRemaining);
-
-
-
-private
-//class variables
-	int numQueues;
-	int ageTime;
-	int timeQuant;
-	int totalWait;
-	int totalTurnaround;
-
-	int arrivalTime;
-	int startTime;
-	int endTime;
-	int processCount;
-	
-	queue<Process> * queuelist;
-	queue<Process> holdingQueue;
+#endif
