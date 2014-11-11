@@ -17,13 +17,13 @@ MFQS::MFQS(int numQueues, int at, int quantum, Process *processArray)
 
 void MFQS::runProcess(Process *currentProcess, int q1, int curQuantum, int currentRemaining)
 {
-    if (q == 0)
+    if (q1 == 0)
     {
         totalWait = c.getTime() - currentProcess->getArrivalTime();
     }
     else
     {
-        totalWait = totalWait + c.getTime + currentProcess->getLastTime();
+        totalWait = totalWait + c.getTime() + currentProcess->getLastTime();
     }
 
     endTime = startTime + curQuantum;
@@ -104,7 +104,7 @@ void MFQS::scheduleProcesses()
                 queueList[q].pop();
 
                 //run the process
-                runProcess(currentP, q, curQuan, currentP->getRemaining());
+                runProcess(currentP, q, curQuan, currentP->getBurstRemaining());
             }
 
         }
@@ -115,7 +115,7 @@ void MFQS::scheduleProcesses()
             {
                 *currentP = queueList[numQueues - 1].front();
                 queueList[numQueues - 1].pop(); //pop the first process
-                if (currentP->getLastExe() > atime)
+                if (currentP->getLastTime() > atime)
                 {
                     queueList[numQueues - 2].push(*currentP); //move up one queue if starving
                 }
@@ -126,7 +126,7 @@ void MFQS::scheduleProcesses()
             }
         }
 
-        curProcess = processes + processCount;
+        currentP = processArray + procs;
     }
 }
 

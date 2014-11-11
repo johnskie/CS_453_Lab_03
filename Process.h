@@ -10,6 +10,7 @@ public:
     int burstRemaining;
     // the time at which the last process was ran
     int lastTime;
+    Process();
     Process(int pid, int burst, int at, int priority, int deadline, int io);
     // getters
     int getPID();
@@ -19,6 +20,7 @@ public:
     int getDeadline();
     int getIO();
     int getLastTime();
+    int getBurstRemaining();
     // other functions
     bool isComplete();
     void decrementTime();
