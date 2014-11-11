@@ -1,0 +1,26 @@
+TODO (ADD SPECIFIC TASKS WHEN FOUND):
+    Create generic process class allowing use in every type of scheduler
+    Create some way to watch after clock ticks (preferably a clock type class like the on for the last lab in CS352)  
+    Create specific schedulers and classes needed:
+        MFQS
+        RTS
+        Windows thing
+
+Process:
+  must have:
+    pid
+    burst
+    priority
+    arrival time
+    deadline
+    if it can do I/O
+
+MFQS:
+  must have:
+    number of queues
+    time quantum
+    list of queues
+    startTime
+    endTime
+    Wait time
+    time to agae
