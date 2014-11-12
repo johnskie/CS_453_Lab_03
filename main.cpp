@@ -115,6 +115,7 @@ int main(int argc, char *args[])
     cout << "Loading " << inf << endl;
 
     // get last item of file so we can figure out how many processes there are in the file
+    // http://stackoverflow.com/questions/11876290/c-fastest-way-to-read-only-last-line-of-text-file
     string last = "";
     ifstream fin;
     fin.open(inf);
@@ -157,7 +158,7 @@ int main(int argc, char *args[])
 
     cout << "PID of last process: " << noProcesses << endl;
 
-    
+
 
 
 
