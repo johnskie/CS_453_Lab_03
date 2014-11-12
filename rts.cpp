@@ -49,6 +49,68 @@ void RTS::runProcess(Process *currentProcess, int q1, int curQuantum, int curren
 void RTS::scheduleProcesses()
 {
 	int procs, q, curQuan;
+	bool comp = false;
+
+	while (currentP != NULL && !comp
+	{
+		startTime = c.getTime();
+
+		q = 0;
+		curQuan = quantum;
+		int atime = currentP->getArrivalTime();
+
+		if (currentP != NULL && atime <= startTime)
+		{
+			runProcess(currentP, q, curQuan, currentP->getBurstTime());
+			procs++
+		}
+		else
+		{
+			while(q < numQueues - 1 && &(queueList[q]) != NULL)
+			{
+				q++;
+			}
+		}
+		if (q = 0 || q == numQueues - 1)
+		{
+			if (currentP != NULL)
+			{
+				while (currentP->getArrivalTime() > c.getTime())
+				{
+					c.incrementTime();
+				}
+			}
+			else
+			{
+				comp = true;
+			}
+		}
+		else if (q == numQueues - 2)
+		{
+			*currentP = queueList[q].front();
+			queueList[q].pop();
+
+			runProcess(currentP, q, currentP->getBurstTime(), currentP->getBurstTime());
+		}
+		else
+		{
+			for (int i = 0; i < q; i++)
+			{
+				curQuan = curQuan * 2;
+			}
+			
+			//set next process
+			*currentP = queueList[q].front();
+			queueList[q].pop();
+
+			//run the process
+			runProcess(currentP, q, curQuan, currentP->getBurstRemaining());
+		}
+
+		while(&(queueList[numQueues - 1]) != NULL)
+		{
+			*currentP = queueList[numQueues - 1].empty())
+
 
 
 
