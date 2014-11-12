@@ -27,6 +27,10 @@ void inputParser(string s, int results[])
             results[cnt] = atoi(ss);
         }
     }
+
+    for (int i = 0; i < 6; i++){
+    	cout << results[i] << endl;
+    }
 }
 
 
@@ -130,7 +134,6 @@ int main(int argc, char *args[])
         {
             char c;
             fin.get(c);
-            cout << c << endl;
 
             if ((int)fin.tellg() <= 1)
             {
@@ -184,13 +187,13 @@ int main(int argc, char *args[])
 
             inputParser(currentLine, results);
             processList[count].setPID(results[0]);
-            processList[count].setArrivalTime(results[1]);
-            processList[count].setBurstTime(results[2]);
-            processList[count].setBurstRemaining(results[2]);
-            processList[count].setLastTime(results[1]);
-            processList[count].setIO(results[3]);
-            processList[count].setPriority(results[4]);
-            processList[count].setDeadline(results[5]);
+            processList[count].setArrivalTime(results[2]);
+            processList[count].setBurstTime(results[1]);
+            processList[count].setBurstRemaining(results[1]);
+            processList[count].setLastTime(results[2]);
+            processList[count].setIO(results[5]);
+            processList[count].setPriority(results[3]);
+            processList[count].setDeadline(results[4]);
             count++;
         }
     }
@@ -198,6 +201,13 @@ int main(int argc, char *args[])
     if (in == "m")
     {
     	cout << "Doing MFQS with " << numQueues << " queues." << endl;
+
+    	if (processList != NULL)
+    	{
+    		cout << "yes" << endl;
+    	}else{
+    		cout << "no" << endl;
+    	}
 
     	MFQS test = MFQS(numQueues, age, quantum, processList);
 

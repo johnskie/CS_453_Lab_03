@@ -13,6 +13,8 @@ MFQS::MFQS(int numQueues, int at, int quantum, Process *processArray)
     queueList[numQueues - 1];
     c = Clock();
     currentP = processArray;
+
+
 }
 
 void MFQS::runProcess(Process *currentProcess, int q1, int curQuantum, int currentRemaining)
@@ -54,30 +56,49 @@ void MFQS::scheduleProcesses()
     while (currentP != NULL && !comp)
     {
         startTime = c.getTime();
+        cout << "Start time: " << startTime << endl;
 
         q = 0;
         curQuan = quantum;
         int atime = currentP->getArrivalTime();
+        cout << "Arrival time: " << atime << endl;
+
+        if (currentP != NULL)
+        {
+            cout << "yes" << endl;
+        }else{
+            cout << "no" << endl;
+        }
 
         if (currentP != NULL && atime <= startTime)
         {
+            cout << "before run process first if" << endl;
             runProcess(currentP, q, curQuan, currentP->getBurstTime());
+            cout << "after run process first if" << endl;
             procs++;
         }
         else
         {
+            cout << "In else" << endl;
+            cout << numQueues << endl;
+            cout << q << endl;
             while (q < numQueues - 1 && &(queueList[q]) != NULL)
             {
                 q++;
             }
+            cout << "after while" << endl;
 
             if (q = 0 || q == numQueues - 1)
             {
+                cout << "In q = 0 || q == numQueues" << endl;
                 if (currentP != NULL)
                 {
+                    cout << "In next if" << endl;
                     while (currentP->getArrivalTime() > c.getTime())
                     {
+                        cout << "Incrementing time" << endl;
                         c.incrementTime();
+                        cout << "after Incrementing time" << endl;
                     }
                 }
                 else
@@ -109,22 +130,30 @@ void MFQS::scheduleProcesses()
 
         }
 
+        cout << "BEFORE WHILE" << endl;
         while (&(queueList[numQueues - 1]) != NULL)
         {
+            cout << "before next while" << endl;
             while (!queueList[numQueues - 1].empty())   //while the FCFS queue has more processes
             {
+                cout << "in next while" << endl;
                 *currentP = queueList[numQueues - 1].front();
+                cout << ".front" << endl;
                 queueList[numQueues - 1].pop(); //pop the first process
+                cout << "before if" << endl;
                 if (currentP->getLastTime() > atime)
                 {
+                    cout << "in if" << endl;
                     queueList[numQueues - 2].push(*currentP); //move up one queue if starving
                 }
                 else
                 {
+                    cout << "in else" << endl;
                     queueList[numQueues - 1].push(*currentP); //push to the back of FCFS if !starving
                 }
             }
         }
+        cout << "after while" << endl;
 
         currentP = processArray + procs;
     }

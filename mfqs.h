@@ -18,7 +18,7 @@ public:
     MFQS(int queues, int aTime, int quant, Process *pArray);
     void scheduleProcesses();
     void runProcess(Process *currentProcess, int q, int quant, int currentRemaining);
-    void initializeQL(std::queue<Process>* ql);
+    void initializeQL(std::queue<Process> *ql);
     Clock c;
 
 };
