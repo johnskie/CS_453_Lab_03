@@ -110,7 +110,8 @@ void RTS::scheduleProcesses()
 		while(&(queueList[numQueues - 1]) != NULL)
 		{
 			*currentP = queueList[numQueues - 1].empty())
-
+			queueList[numQueues - 1].pop(); //pop up one queue of starving
+			if (currentP->getLastTime()
 
 
 
