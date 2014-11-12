@@ -24,7 +24,15 @@ public:
     // other functions
     bool isComplete();
     void decrementTime();
+    // setters
     void setLastTime(int t);
+    void setPID(int t);
+    void setBurstTime(int t);
+    void setArrivalTime(int t);
+    void setPriority(int t);
+    void setDeadline(int t);
+    void setIO(int t);
+    void setBurstRemaining(int t);
 
 };
 #endif

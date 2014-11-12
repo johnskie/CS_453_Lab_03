@@ -81,4 +81,41 @@ void Process::setLastTime(int t){
 	this->lastTime = t;
 }
 
+void Process::setPID(int in)
+{
+    this->pid = in;
+}
+
+void Process::setBurstTime(int in)
+{
+    this->burstTime = in;
+}
+
+void Process::setArrivalTime(int in)
+{
+    this->arrivalTime = in;
+}
+
+void Process::setPriority(int in)
+{
+    this->priority = in;
+}
+
+void Process::setDeadline(int in)
+{
+    this->deadline = in;
+}
+
+void Process::setIO(int in)
+{
+    this->io_ticks = in;
+}
+
+void Process::setBurstRemaining(int in)
+{
+    this->burstRemaining = in;
+}
+
+
+
 

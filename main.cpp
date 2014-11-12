@@ -17,6 +17,7 @@ void inputParser(string s, int results[])
         if (s[i] == '\t')
         {
             const char *ss = s.substr(pos, i - pos).c_str();
+            results[cnt] = atoi(ss);
             cnt++;
             pos = i + 1;
         }
@@ -105,66 +106,105 @@ int main(int argc, char *args[])
     cout << "Enter input file: " << endl;
     while (!validInput)
     {
-    	getline(cin, inf);
-    	if(inf != "")
-    	{
-    		validInput = true;
-    	}
+        getline(cin, inf);
+        if (inf != "")
+        {
+            validInput = true;
+        }
     }
 
     cout << "Loading " << inf << endl;
 
     // get last item of file so we can figure out how many processes there are in the file
     // http://stackoverflow.com/questions/11876290/c-fastest-way-to-read-only-last-line-of-text-file
-    string last = "";
+    string lastLine;
     ifstream fin;
-    fin.open(inf);
-    if(fin.is_open())
+    const char *fileIn = inf.c_str();
+    fin.open(fileIn);
+    if (fin.is_open())
     {
-    	fin.seekg(-1,ios_base::end);
+        fin.seekg(-1, ios_base::end);
 
-    	validInput = false;
-    	while (!validInput)
-    	{
-    		char c;
-    		fin.get(c);
+        validInput = false;
+        while (!validInput)
+        {
+            char c;
+            fin.get(c);
+            cout << c << endl;
 
-    		if((int)fin.tellg() <= 1)
-    		{
-    			fin.seekg(0);
-    			validInput = true;
-    		}
-    		else if(c == '\n')
-    		{
-    			validInput = true;
-    		}
-    		else
-    		{
-    			fin.seekg(-2,ios_base::cur);
-    		}
-    	}
+            if ((int)fin.tellg() <= 1)
+            {
+                fin.seekg(0);
+                validInput = true;
+            }
+            else if (c == '\n')
+            {
+                validInput = true;
+            }
+            else
+            {
+                fin.seekg(-2, ios_base::cur);
+            }
+        }
 
-    	getline(fin,last);
-    	fin.close();
+        getline(fin, lastLine);
+        fin.close();
+    }
+    else
+    {
+        cout << "unable to open file" ;
+        exit(1);
     }
 
-    cout << "Last line: " << last << endl;
+    cout << "Last line: " << lastLine << endl;
 
     // now that we have the last line, get the pid of it (which is the size of the array)
     int results[6];
-    int noProcesses = 0;
-    inputParser(last, results);
-    noProcesses = results[0];
+    int numberProcesses = 0;
+    inputParser(lastLine, results);
+    numberProcesses = results[0];
 
-    cout << "PID of last process: " << noProcesses << endl;
+    cout << "PID of last process: " << numberProcesses << endl;
 
+    Process *processList;
+    processList = new Process[numberProcesses + 1];
 
+    int count = 0;
+    string currentLine = "";
 
+    fin.open(fileIn);
+    if (fin.is_open())
+    {
+        // ignore the very first line because it is just headings
+        getline(fin, currentLine);
+        // while there is still something to read in the file
+        while (fin.good())
+        {
+            getline(fin, currentLine);
 
+            inputParser(currentLine, results);
+            processList[count].setPID(results[0]);
+            processList[count].setArrivalTime(results[1]);
+            processList[count].setBurstTime(results[2]);
+            processList[count].setBurstRemaining(results[2]);
+            processList[count].setLastTime(results[1]);
+            processList[count].setIO(results[3]);
+            processList[count].setPriority(results[4]);
+            processList[count].setDeadline(results[5]);
+            count++;
+        }
+    }
 
+    if (in == "m")
+    {
+    	cout << "Doing MFQS with " << numQueues << " queues." << endl;
 
+    	MFQS test = MFQS(numQueues, age, quantum, processList);
 
-
+    	cout << "created" << endl;
+    	test.scheduleProcesses();
+    	cout << "done" << endl;
+    }
 
 
 

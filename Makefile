@@ -1,6 +1,6 @@
 # http://www.haverford.edu/cmsc/course-pages/usingMake.html
 
-all: main.o mfqs.o clock.o process.o
+all : mfqs.o clock.o process.o  main.o
 	g++ process.o clock.o mfqs.o main.o -lm -o myprogram
 process.o : Process.cpp Process.h
 	g++ -c Process.cpp -o process.o
@@ -13,3 +13,6 @@ mfqs.o : mfqs.cpp mfqs.h
 
 main.o : main.cpp
 	g++ -c main.cpp
+
+clean :
+	rm -rf *o myprogram
