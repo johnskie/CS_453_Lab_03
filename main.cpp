@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <stdlib.h>
 #include "Process.h"
@@ -39,7 +40,7 @@ int main(int argc, char *args[])
     {
         getline(cin, in);
 
-        if (strcmp(in, "m") == 0)
+        if (in == "m")
         {
             while (!valid2)
             {
@@ -82,12 +83,12 @@ int main(int argc, char *args[])
                 }
             }
         }
-        else if (strcmp(in, "r") == 0)
+        else if (in == "r")
         {
             // do RTS stuff
             valid = true;
         }
-        else if (strcmp(in, "wh"))
+        else if (in == "wh")
         {
             // do windows hybrid
             valid = true;
@@ -97,6 +98,73 @@ int main(int argc, char *args[])
             cout << "Invalid input. Please select: m = MFQS, r = RTS, wh = Windows Hybrid" << endl;
         }
     }
+
+    bool validInput = false;
+    string inf = "";
+
+    cout << "Enter input file: " << endl;
+    while (!validInput)
+    {
+    	getline(cin, inf);
+    	if(inf != "")
+    	{
+    		validInput = true;
+    	}
+    }
+
+    cout << "Loading " << inf << endl;
+
+    // get last item of file so we can figure out how many processes there are in the file
+    string last = "";
+    ifstream fin;
+    fin.open(inf);
+    if(fin.is_open())
+    {
+    	fin.seekg(-1,ios_base::end);
+
+    	validInput = false;
+    	while (!validInput)
+    	{
+    		char c;
+    		fin.get(c);
+
+    		if((int)fin.tellg() <= 1)
+    		{
+    			fin.seekg(0);
+    			validInput = true;
+    		}
+    		else if(c == '\n')
+    		{
+    			validInput = true;
+    		}
+    		else
+    		{
+    			fin.seekg(-2,ios_base::cur);
+    		}
+    	}
+
+    	getline(fin,last);
+    	fin.close();
+    }
+
+    cout << "Last line: " << last << endl;
+
+    // now that we have the last line, get the pid of it (which is the size of the array)
+    int results[6];
+    int noProcesses = 0;
+    inputParser(last, results);
+    noProcesses = results[0];
+
+    cout << "PID of last process: " << noProcesses << endl;
+
+    
+
+
+
+
+
+
+
 
 
     return 0;
