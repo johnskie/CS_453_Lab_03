@@ -11,7 +11,7 @@ class RTS
 {
 public:
 
-	int numQueues, at, quantum, totalWait, totalTurnaround, startTime, endTime, numProcesses;
+	int at, quantum, totalWait, totalTurnaround, startTime, endTime, numProcesses;
 	process *processArray, *currentP;
 	std::queue<Process> *queueList;
 	std::queue<Process> curQueue;
