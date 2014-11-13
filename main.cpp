@@ -127,30 +127,30 @@ int main(int argc, char *args[])
     fin.open(fileIn);
     if (fin.is_open())
     {
-        fin.seekg(-1, ios_base::end);
+        fin.seekg(-1, ios_base::end);//go to one spot before the EOF
 
         validInput = false;
         while (!validInput)
         {
             char c;
-            fin.get(c);
+            fin.get(c);		//get current byte's data
 
-            if ((int)fin.tellg() <= 1)
+            if ((int)fin.tellg() <= 1)//if the data was at or before the 0th byte
             {
-                fin.seekg(0);
+                fin.seekg(0);//the first line is the last line
                 validInput = true;
             }
-            else if (c == '\n')
+            else if (c == '\n') //if the data was a newline
             {
                 validInput = true;
             }
             else
             {
-                fin.seekg(-2, ios_base::cur);
+                fin.seekg(-2, ios_base::cur);//if the data was neitehr a newline nor at the 0th byte, move to the front of that data, then to the front of the data before it.
             }
         }
 
-        getline(fin, lastLine);
+        getline(fin, lastLine); //read the current line
         fin.close();
     }
     else
@@ -159,7 +159,7 @@ int main(int argc, char *args[])
         exit(1);
     }
 
-    cout << "Last line: " << lastLine << endl;
+    cout << "Last line: " << lastLine << endl; //display the currentline obtained in getline(fin, lastLine)
 
     // now that we have the last line, get the pid of it (which is the size of the array)
     int results[6];
