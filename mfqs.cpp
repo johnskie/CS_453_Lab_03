@@ -22,13 +22,13 @@ void MFQS::runProcess(Process *currentProcess, int q1, int curQuantum, int curre
     if (q1 == 0)
     {
         totalWait = c.getTime() - currentProcess->getArrivalTime();
-    }
+    } 
     else
     {
         totalWait = totalWait + c.getTime() + currentProcess->getLastTime();
     }
 
-    endTime = startTime + curQuantum;
+    endTime = startTime + curQuantum; // the endtime of a process is set to it's start time plus the current time quantum(i.e how long it ran)
     while (c.getTime() <= endTime && currentRemaining > 0)
     {
         c.incrementTime();
@@ -56,49 +56,49 @@ void MFQS::scheduleProcesses()
     while (currentP != NULL && !comp)
     {
         startTime = c.getTime();
-        cout << "Start time: " << startTime << endl;
+        cout << "Start time: " << startTime << endl; // bugtest cout
 
         q = 0;
         curQuan = quantum;
         int atime = currentP->getArrivalTime();
-        cout << "Arrival time: " << atime << endl;
+        cout << "Arrival time: " << atime << endl;// bugtest cout
 
         if (currentP != NULL)
         {
-            cout << "yes" << endl;
+            cout << "yes" << endl;// bugtest cout
         }else{
-            cout << "no" << endl;
+            cout << "no" << endl;// bugtest cout
         }
 
         if (currentP != NULL && atime <= startTime)
         {
-            cout << "before run process first if" << endl;
+            cout << "before run process first if" << endl; // bugtest cout
             runProcess(currentP, q, curQuan, currentP->getBurstTime());
-            cout << "after run process first if" << endl;
+            cout << "after run process first if" << endl; // bugtest cout
             procs++;
         }
         else
         {
-            cout << "In else" << endl;
+            cout << "In else" << endl; // bugtest cout
             cout << numQueues << endl;
             cout << q << endl;
             while (q < numQueues - 1 && &(queueList[q]) != NULL)
             {
                 q++;
             }
-            cout << "after while" << endl;
+            cout << "after while" << endl; // bugtest cout
 
             if (q = 0 || q == numQueues - 1)
             {
-                cout << "In q = 0 || q == numQueues" << endl;
+                cout << "In q = 0 || q == numQueues" << endl;// bugtest cout
                 if (currentP != NULL)
                 {
-                    cout << "In next if" << endl;
+                    cout << "In next if" << endl; // bugtest cout
                     while (currentP->getArrivalTime() > c.getTime())
                     {
-                        cout << "Incrementing time" << endl;
+                        cout << "Incrementing time" << endl; // bugtest cout
                         c.incrementTime();
-                        cout << "after Incrementing time" << endl;
+                        cout << "after Incrementing time" << endl; // bugtest cout
                     }
                 }
                 else
@@ -130,25 +130,25 @@ void MFQS::scheduleProcesses()
 
         }
 
-        cout << "BEFORE WHILE" << endl;
+        cout << "BEFORE WHILE" << endl; // bugtest cout
         while (&(queueList[numQueues - 1]) != NULL)
         {
-            cout << "before next while" << endl;
+            cout << "before next while" << endl; // bugtest cout
             while (!queueList[numQueues - 1].empty())   //while the FCFS queue has more processes
             {
-                cout << "in next while" << endl;
+                cout << "in next while" << endl; // bugtest cout
                 *currentP = queueList[numQueues - 1].front();
-                cout << ".front" << endl;
+                cout << ".front" << endl; // bugtest cout
                 queueList[numQueues - 1].pop(); //pop the first process
-                cout << "before if" << endl;
+                cout << "before if" << endl; // bugtest cout
                 if (currentP->getLastTime() > atime)
                 {
-                    cout << "in if" << endl;
+                    cout << "in if" << endl; // bugtest cout
                     queueList[numQueues - 2].push(*currentP); //move up one queue if starving
                 }
                 else
                 {
-                    cout << "in else" << endl;
+                    cout << "in else" << endl; // bugtest cout
                     queueList[numQueues - 1].push(*currentP); //push to the back of FCFS if !starving
                 }
             }
