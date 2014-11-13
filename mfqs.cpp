@@ -16,7 +16,7 @@ MFQS::MFQS(int numQueues, int at, int quantum, Process *processArray)
     // initialization issue with queuelist? where is it initialized?
     for (int i = 0; i < numQueues - 1; i++)
     {
-    	&queueList[i] == nullptr;
+    	&queueList[i] =  NULL;
     }
 
 
