@@ -2,13 +2,13 @@
 
 Process::Process()
 {
-    // this->pid = 0;
-    // burstTime = 0;
-    // arrivalTime = 0;
-    // this->priority;
-    // this->deadline;
-    // io_ticks = 0;
-    // burstRemaining = 0;
+    this->pid = 0;
+    burstTime = 0;
+    arrivalTime = 0;
+    this->priority;
+    this->deadline;
+    io_ticks = 0;
+    burstRemaining = 0;
 }
 Process::Process(int pid, int burst, int arrival, int priority, int deadline, int io)
 {

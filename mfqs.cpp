@@ -61,42 +61,32 @@ void MFQS::scheduleProcesses()
     while (currentP != NULL && !comp)
     {
         startTime = c.getTime();
-        cout << "Start time: " << startTime << endl; // bugtest cout
 
         q = 0;
         curQuan = quantum;
         int atime = currentP->getArrivalTime();
-        cout << "Arrival time: " << atime << endl;// bugtest cout
 
         if (currentP != NULL && atime <= startTime)
         {
-            cout << "before run process first if" << endl; // bugtest cout
             runProcess(currentP, q, curQuan, currentP->getBurstTime());
-            cout << "after run process first if" << endl; // bugtest cout
             procs++;
         }
         else
         {
-            cout << "In else" << endl; // bugtest cout
             cout << numQueues << endl;
             cout << q << endl;
             while (q < numQueues - 1 && &(queueList[q]) != NULL)
             {
                 q++;
             }
-            cout << "after while" << endl; // bugtest cout
 
-            if (q = 0 || q == numQueues - 1)
+            if (q == 0 || q == numQueues - 1)
             {
-                cout << "In q = 0 || q == numQueues" << endl;// bugtest cout
                 if (currentP != NULL)
                 {
-                    cout << "In next if" << endl; // bugtest cout
                     while (currentP->getArrivalTime() > c.getTime())
                     {
-                        cout << "Incrementing time" << endl; // bugtest cout
                         c.incrementTime();
-                        cout << "after Incrementing time" << endl; // bugtest cout
                     }
                 }
                 else
@@ -106,7 +96,6 @@ void MFQS::scheduleProcesses()
             }
             else if (q == numQueues - 2)
             {
-            	cout << "In else if" << endl;
                 *currentP = queueList[q].front();
                 queueList[q].pop();
 
@@ -114,7 +103,6 @@ void MFQS::scheduleProcesses()
             }
             else
             {
-            	cout << "In else 34234" << endl;
                 for (int i = 0; i < q; i++)
                 {
                     curQuan = curQuan * 2;
@@ -134,30 +122,23 @@ void MFQS::scheduleProcesses()
         // mfqs gets this far with valgrind before starting an error cycle in the while loops
         // gets as far as before if and in if, keeps returning use of uninitialzed value of size 8
         // terminates after with default action of signal 11 (SIGSEGV)
-        cout << "BEFORE WHILE" << endl; // bugtest cout
         while (&(queueList[numQueues - 1]) != NULL)
         {
-            cout << "before next while" << endl; // bugtest cout
             while (!queueList[numQueues - 1].empty())   //while the FCFS queue has more processes
             {
-                cout << "in next while" << endl; // bugtest cout
                 *currentP = queueList[numQueues - 1].front();
-                cout << ".front" << endl; // bugtest cout
                 queueList[numQueues - 1].pop(); //pop the first process
-                cout << "before if" << endl; // bugtest cout
                 if (currentP->getLastTime() > atime)
                 {
-                    cout << "in if" << endl; // bugtest cout
                     queueList[numQueues - 2].push(*currentP); //move up one queue if starving
                 }
                 else
                 {
-                    cout << "in else" << endl; // bugtest cout
                     queueList[numQueues - 1].push(*currentP); //push to the back of FCFS if !starving
                 }
             }
         }
-        cout << "before currentP" << endl;
+        cout << "before currentP2" << endl;
 
         currentP = processArray + procs;
     }

@@ -27,11 +27,6 @@ void inputParser(string s, int results[])
             results[cnt] = atoi(ss);
         }
     }
-
-    for (int i = 0; i < 6; i++)
-    {
-        cout << results[i] << endl;
-    }
 }
 
 void shiftRight(Process *arr, int low, int high)
@@ -42,25 +37,23 @@ void shiftRight(Process *arr, int low, int high)
         int leftChild = (root * 2) + 1;
         int rightChild = leftChild + 1;
         int swapIdx = root;
-        /*Check if root is less than left child*/
+
         if (arr[swapIdx].getArrivalTime() < arr[leftChild].getArrivalTime())
         {
             swapIdx = leftChild;
         }
-        /*If right child exists check if it is less than current root*/
+
         if ((rightChild <= high) && (arr[swapIdx].getArrivalTime() < arr[rightChild].getArrivalTime()))
         {
             swapIdx = rightChild;
         }
-        /*Make the biggest element of root, left and right child the root*/
+        
         if (swapIdx != root)
         {
             Process tmp = arr[root];
             arr[root] = arr[swapIdx];
             arr[swapIdx] = tmp;
-            /*Keep shifting right and ensure that swapIdx satisfies
-            heap property aka left and right child of it is smaller than
-            itself*/
+
             root = swapIdx;
         }
         else
@@ -72,9 +65,7 @@ void shiftRight(Process *arr, int low, int high)
 }
 void heapify(Process *arr, int low, int high)
 {
-    /*Start with middle element. Middle element is chosen in
-    such a way that the last element of array is either its
-    left child or right child*/
+
     int midIdx = (high - low - 1) / 2;
     while (midIdx >= 0)
     {
