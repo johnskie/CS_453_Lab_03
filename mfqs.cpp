@@ -13,7 +13,7 @@ MFQS::MFQS(int numQueues, int at, int quantum, Process *processArray)
     queueList[numQueues - 1];
     c = Clock();
     currentP = processArray;
-
+// initialization issue with queuelist? where is it initialized?
 
 }
 
@@ -129,7 +129,9 @@ void MFQS::scheduleProcesses()
             }
 
         }
-
+// mfqs gets this far with valgrind before starting an error cycle in the while loops
+// gets as far as before if and in if, keeps returning use of uninitialzed value of size 8
+// terminates after with default action of signal 11 (SIGSEGV)
         cout << "BEFORE WHILE" << endl; // bugtest cout
         while (&(queueList[numQueues - 1]) != NULL)
         {
