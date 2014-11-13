@@ -28,9 +28,77 @@ void inputParser(string s, int results[])
         }
     }
 
-    for (int i = 0; i < 6; i++){
-    	cout << results[i] << endl;
+    for (int i = 0; i < 6; i++)
+    {
+        cout << results[i] << endl;
     }
+}
+
+void shiftRight(Process *arr, int low, int high)
+{
+    int root = low;
+    while ((root * 2) + 1 <= high)
+    {
+        int leftChild = (root * 2) + 1;
+        int rightChild = leftChild + 1;
+        int swapIdx = root;
+        /*Check if root is less than left child*/
+        if (arr[swapIdx].getArrivalTime() < arr[leftChild].getArrivalTime())
+        {
+            swapIdx = leftChild;
+        }
+        /*If right child exists check if it is less than current root*/
+        if ((rightChild <= high) && (arr[swapIdx].getArrivalTime() < arr[rightChild].getArrivalTime()))
+        {
+            swapIdx = rightChild;
+        }
+        /*Make the biggest element of root, left and right child the root*/
+        if (swapIdx != root)
+        {
+            Process tmp = arr[root];
+            arr[root] = arr[swapIdx];
+            arr[swapIdx] = tmp;
+            /*Keep shifting right and ensure that swapIdx satisfies
+            heap property aka left and right child of it is smaller than
+            itself*/
+            root = swapIdx;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return;
+}
+void heapify(Process *arr, int low, int high)
+{
+    /*Start with middle element. Middle element is chosen in
+    such a way that the last element of array is either its
+    left child or right child*/
+    int midIdx = (high - low - 1) / 2;
+    while (midIdx >= 0)
+    {
+        shiftRight(arr, midIdx, high);
+        --midIdx;
+    }
+    return;
+}
+void heapSort(Process *arr, int size)
+{
+    /*This will put max element in the index 0*/
+    heapify(arr, 0, size - 1);
+    int high = size - 1;
+    while (high > 0)
+    {
+        /*Swap max element with high index in the array*/
+        Process tmp = arr[high];
+        arr[high] = arr[0];
+        arr[0] = tmp;
+        --high;
+        /*Ensure heap property on remaining elements*/
+        shiftRight(arr, 0, high);
+    }
+    return;
 }
 
 
@@ -167,8 +235,6 @@ int main(int argc, char *args[])
     inputParser(lastLine, results);
     numberProcesses = results[0];
 
-    cout << "PID of last process: " << numberProcesses << endl;
-
     Process *processList;
     processList = new Process[numberProcesses + 1];
 
@@ -196,24 +262,34 @@ int main(int argc, char *args[])
             processList[count].setDeadline(results[4]);
             count++;
         }
+        fin.close();
     }
+
+    // sort processes
+    cout << "Array :" << endl << "[ ";
+    for (int i = 0; i < numberProcesses; i++)
+    {
+        cout << processList[i].getPID() << "|" << processList[i].getArrivalTime() << endl;
+    }
+    cout << "]" << endl;
+    heapSort(processList, numberProcesses);
+
+    cout << "Sorted Array :" << endl << "[ ";
+    for (int i = 0; i < numberProcesses; i++)
+    {
+        cout << processList[i].getPID() << "|" << processList[i].getArrivalTime() << endl;
+    }
+    cout << "]" << endl;
+
+
 
     if (in == "m")
     {
-    	cout << "Doing MFQS with " << numQueues << " queues." << endl;
-
-    	if (processList != NULL)
-    	{
-    		cout << "yes" << endl;
-    	}else{
-    		cout << "no" << endl;
-    	}
-
-    	MFQS test = MFQS(numQueues, age, quantum, processList);
-
-    	cout << "created" << endl;
-    	test.scheduleProcesses();
-    	cout << "done" << endl;
+        cout << "Doing MFQS with " << numQueues << " queues." << endl;
+        MFQS test = MFQS(numQueues, age, quantum, processList);
+        cout << "created" << endl;
+        test.scheduleProcesses();
+        cout << "done" << endl;
     }
 
 

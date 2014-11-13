@@ -13,7 +13,12 @@ MFQS::MFQS(int numQueues, int at, int quantum, Process *processArray)
     queueList[numQueues - 1];
     c = Clock();
     currentP = processArray;
-// initialization issue with queuelist? where is it initialized?
+    // initialization issue with queuelist? where is it initialized?
+    for (int i = 0; i < numQueues - 1; i++)
+    {
+    	&queueList[i] == nullptr;
+    }
+
 
 }
 
@@ -22,7 +27,7 @@ void MFQS::runProcess(Process *currentProcess, int q1, int curQuantum, int curre
     if (q1 == 0)
     {
         totalWait = c.getTime() - currentProcess->getArrivalTime();
-    } 
+    }
     else
     {
         totalWait = totalWait + c.getTime() + currentProcess->getLastTime();
@@ -63,13 +68,6 @@ void MFQS::scheduleProcesses()
         int atime = currentP->getArrivalTime();
         cout << "Arrival time: " << atime << endl;// bugtest cout
 
-        if (currentP != NULL)
-        {
-            cout << "yes" << endl;// bugtest cout
-        }else{
-            cout << "no" << endl;// bugtest cout
-        }
-
         if (currentP != NULL && atime <= startTime)
         {
             cout << "before run process first if" << endl; // bugtest cout
@@ -108,6 +106,7 @@ void MFQS::scheduleProcesses()
             }
             else if (q == numQueues - 2)
             {
+            	cout << "In else if" << endl;
                 *currentP = queueList[q].front();
                 queueList[q].pop();
 
@@ -115,23 +114,26 @@ void MFQS::scheduleProcesses()
             }
             else
             {
+            	cout << "In else 34234" << endl;
                 for (int i = 0; i < q; i++)
                 {
                     curQuan = curQuan * 2;
                 }
 
                 //set next process
+                cout << "before currentP" << endl;
                 *currentP = queueList[q].front();
+                cout << "before pop" << endl;
                 queueList[q].pop();
-
+				cout << "before run process" << endl;
                 //run the process
                 runProcess(currentP, q, curQuan, currentP->getBurstRemaining());
             }
 
         }
-// mfqs gets this far with valgrind before starting an error cycle in the while loops
-// gets as far as before if and in if, keeps returning use of uninitialzed value of size 8
-// terminates after with default action of signal 11 (SIGSEGV)
+        // mfqs gets this far with valgrind before starting an error cycle in the while loops
+        // gets as far as before if and in if, keeps returning use of uninitialzed value of size 8
+        // terminates after with default action of signal 11 (SIGSEGV)
         cout << "BEFORE WHILE" << endl; // bugtest cout
         while (&(queueList[numQueues - 1]) != NULL)
         {
@@ -155,7 +157,7 @@ void MFQS::scheduleProcesses()
                 }
             }
         }
-        cout << "after while" << endl;
+        cout << "before currentP" << endl;
 
         currentP = processArray + procs;
     }
