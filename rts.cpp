@@ -1,7 +1,28 @@
 #include "RTS.h"
 
-using namespace std;
+int main (int argc, char **argv){
+	if(argc != 2) {
+		cout << "rts <input_file>\n";
+		return 0;
+	}
 
+		bool hardness = 0;
+		cout << "Select your environment\n (1) Hard\n (0) Soft" << endl;
+		cin >> hardness;
+		rts sched(hardness);
+		sched.loadinput(argv[1]);
+		sched.run_sched();
+		sched.stats();
+		exit(0);
+	return 0;
+}
+
+
+
+
+
+/*
+again, this is old deprecated code, included for completeness and records
 RTS::RTS(int numQueues, int at, int quantum, int dline,  Process *processArray)
 {
 	this->at = at;
@@ -20,3 +41,4 @@ RTS::RTS(int numQueues, int at, int quantum, int dline,  Process *processArray)
 // make sure processes run by deadlines, if they cannot report them as failed (PID) and remove from queue
 // ignore IO same as mfqs
 void RTS::runProcess()
+*/
