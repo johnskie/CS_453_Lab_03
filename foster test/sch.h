@@ -20,7 +20,7 @@ class sch {
 		int queue_total;
 		int current_queue;
 		int agefactor;
-		vector<mfqsProcess> queues[5]; // is this right?	
+		vector<mfqsProcess> queues[5]; 	
 		bool interrupt;
 		int thetime;
 		
@@ -30,13 +30,14 @@ class sch {
 		{ 
 			cpu_hist.resize(100000);
 			cout << "before thisloop" << endl;
+						queue_total = number;
 			cout << "queue_total: " << queue_total << endl;
-			//for (int i=0;i<queue_total;i++){
-			//	queues[i].resize(100);
-			//}cout << "after the loop" << endl;
+
+			for (int i=0;i<queue_total;i++){
+				queues[i].resize(100);
+			}cout << "after the loop" << endl;
 			thetime = 0;
 			timeQ = time;
-			queue_total = number;
 			interrupt = false;
 			current_queue = 0;
 			this->agefactor = agefactor;
@@ -166,7 +167,7 @@ class sch {
 						else //evertying empty
 							if (!future_list.empty()){
 								update_clock();
-								cpu_hist.push_back(-1);
+								//cpu_hist.push_back(-1);
 							}
 							else{
 								bool allEmpty=true;
@@ -194,19 +195,18 @@ class sch {
 				for(subtime = 0; (subtime < timeQ*(i+1)) && !interrupt && first->timeRemaining > 0; subtime++){
 					//cout << "pid " << first->getPid() << " remaining " << first->timeRemaining << endl; 	
 					first->timeRemaining--;
-					cpu_hist.push_back(first->getPid());
+					//cpu_hist.push_back(first->getPid());
 					update_clock(); //calls update;
 					first = &queues[i][0];
 				}			
 				if( first->timeRemaining <= 0){
 					first->finishTime = thetime;
 					done_list.push_back( *first );
-					queues[i].erase( queues[i].begin() );
 				} else{
 					//cout << "moving pid " << first->getPid() << " to [" << i << "]" << endl;
 					queues[i+1].push_back( mfqsProcess(*first) ); //push
-					queues[i].erase( queues[i].begin() );				//pop
 				}
+				queues[i].erase( queues[i].begin() );
 			}
 			return (int)interrupt;
 		};
@@ -216,7 +216,7 @@ class sch {
 				mfqsProcess* first = &queues[i][0];
 				for(; !interrupt && first->timeRemaining > 0 ;){
 					first->timeRemaining--;
-					cpu_hist.push_back(first->getPid());
+					//cpu_hist.push_back(first->getPid());
 					update_clock();
 					first = &queues[i][0];
 				}
@@ -247,9 +247,9 @@ class sch {
 				}
 			}
 			cout << "CPU history" <<endl;
-			for(unsigned int i=0; i<cpu_hist.size(); i++){
-				cout << cpu_hist[i] << " ";
-			} cout << endl;
+			//for(unsigned int i=0; i<cpu_hist.size(); i++){
+			//	cout << cpu_hist[i] << " ";
+			//} cout << endl;
 		};
 	
 		void stats() {
