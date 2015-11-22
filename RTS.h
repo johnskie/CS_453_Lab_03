@@ -14,20 +14,20 @@ using namespace std;
 
 class rts {
 	protected:
-		vector<RTSprocess> proc_list;
+		vector<rtsProcess> proc_list;
 		int clock;
 		vector<int> cpu_hist;
 		bool isHard;
 	public:
-		rts() { clock =0; };
-		rts(bool hardness) { clock =0; isHard = hardness; };
+		rts() { clock = 0; };
+		rts(bool hardness) { clock = 0; isHard = hardness; };
 		~rts() { };
 		
 		class proxyCompare {
 			rts& that;
 			public:
 			proxyCompare(rts &h) : that(h) {}
-			bool operator()(RTSprocess const &p1,RTSprocess const &p2) const {
+			bool operator()(rtsProcess const &p1, rtsProcess const &p2) const {
 				bool oneIsInFuture = false;
 				bool twoIsInFuture = false;
 				if (p1.arrival > that.clock)
@@ -107,15 +107,23 @@ class rts {
 
 // method to actually run the scheduler
 		int run_sched(){
+			cout << "test1" << endl;
 			//self explanatory, if we aren't done with the last process, this bool is false
 			bool doneWithLast = false;
-			vector<rtsProcess>::iterator first = proc_list.begin();
+			vector<rtsProcess>::iterator first = proc_list.begin(); // returns first(pointer) to the beginning of proc_list
+			cout << "test2" << endl;
+			cout << doneWithLast << endl;
 			while(!doneWithLast) {
-				if(first==proc_list.end())
+				if(first==proc_list.end()) // if the pointer is equal to the end of proc_list then go to skip
+					cout << "test3" << endl;
 					goto skip;
+					cout << "test126" << endl;
 				sort( first, proc_list.end() , proxyCompare(*this) );
+				cout << "test4" << endl;
 				//time checking for hard and soft environments, deadlines determine if we meet the exit conditions
 				if( first->arrival <= clock) {
+					cout << "test5" << endl;
+					cout << clock << endl;
 					if(clock > first->deadline){
 						if (this->isHard){
 							cout << "Process " << first->pid <<" failed to reach deadline, hardtime environment aborting!" << endl;	
@@ -135,9 +143,14 @@ class rts {
 					cpu_hist.push_back(first->pid);
 					first->timeRemaining--;
 					if(first->timeRemaining <= 0){
-						skip:
-						first->finishTime = clock;
+						skip: // here in skip get the member finishTime from first and set it = to clock (0) 
+						cout << "test16" << endl;
+						cout << clock << endl;
+						first->finishTime = clock; //error in this line, error concerning null value?(segfault)
+						cout << clock << endl;
+						cout << "test17" << endl;
 						if(first == proc_list.end()){
+							cout << "test18" << endl;
 							doneWithLast = true;
 						}
 						else{
@@ -159,7 +172,7 @@ class rts {
 			double avgTurn = 0;
 			double avgWait = 0;
 			double count = 0;
-			vector<RTSprocess>::iterator it;
+			vector<rtsProcess>::iterator it;
 			for (it = proc_list.begin(); it != proc_list.end(); it++){
 				if(!it->failed){
 					count++;
