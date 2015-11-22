@@ -61,7 +61,7 @@ class rtsProcess {
 			failed = p.failed;
 		};
 		// set with return
-		rtsProcess& operator= (const rtsProcess &p) {
+		rtsProcess& operator = (const rtsProcess &p) {
 			pid = p.pid;
 			burst = p.burst;
 			arrival = p.arrival;
@@ -74,12 +74,12 @@ class rtsProcess {
 		};
 		//set the operators
 		bool operator== (const rtsProcess &p) {
-			return (this->pid==p.pid && this->arrival == p.arrival && this->burst == p.burst);
+			return (this->pid == p.pid && this->arrival == p.arrival && this->burst == p.burst);
 		}
 		bool operator!= (const rtsProcess &p){
-			return !(this->pid==p.pid && this->arrival == p.arrival && this->burst == p.burst);
+			return !(this->pid == p.pid && this->arrival == p.arrival && this->burst == p.burst);
 		}
-		friend ostream& operator<< (ostream &os, const rtsProcess &p) {
+		friend ostream& operator << (ostream &os, const rtsProcess &p) {
 			p.display(os);
 			return os;
 		};
