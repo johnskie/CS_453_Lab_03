@@ -62,14 +62,7 @@ int Process::getBurstRemaining()
 
 bool Process::isComplete()
 {
-    bool comp = false;
-
-    if (this->burstRemaining < 1)
-    {
-        comp = true;
-    }
-
-    return true;
+    return this->burstRemaining < 1)  
 }
 
 void Process::decrementTime()
@@ -114,6 +107,17 @@ void Process::setIO(int in)
 void Process::setBurstRemaining(int in)
 {
     this->burstRemaining = in;
+}
+
+void Process::toString()
+{
+	cout << "pid: " << this->pid << endl
+	cout << "burstTime: " << this->burstTime << endl
+	cout << "arrivalTime: " << this->arrivalTime << endl
+	cout << "priority: " << this->priority << endl
+	cout << "deadline: " << this->deadline << endl
+	cout << "io_ticks: " << this->io_ticks << endl
+	cout << "burstRemaining: " << this->burstRemaining << endl
 }
 
 

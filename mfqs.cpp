@@ -13,13 +13,6 @@ MFQS::MFQS(int numQueues, int at, int quantum, Process *processArray)
     queueList[numQueues - 1];
     c = Clock();
     currentP = processArray;
-    // initialization issue with queuelist? where is it initialized?
-    for (int i = 0; i < numQueues - 1; i++)
-    {
-    	&queueList[i] =  NULL;
-    }
-
-
 }
 
 void MFQS::runProcess(Process *currentProcess, int q1, int curQuantum, int currentRemaining)
@@ -87,8 +80,8 @@ void MFQS::scheduleProcesses()
                     while (currentP->getArrivalTime() > c.getTime())
                     {
                         c.incrementTime();
-                    }
-                }
+					}
+				}
                 else
                 {
                     comp = true;
@@ -109,11 +102,11 @@ void MFQS::scheduleProcesses()
                 }
 
                 //set next process
-                cout << "before currentP" << endl;
+                //cout << "before currentP" << endl;
                 *currentP = queueList[q].front();
-                cout << "before pop" << endl;
+                //cout << "before pop" << endl;
                 queueList[q].pop();
-				cout << "before run process" << endl;
+				//cout << "before run process" << endl;
                 //run the process
                 runProcess(currentP, q, curQuan, currentP->getBurstRemaining());
             }
@@ -127,15 +120,16 @@ void MFQS::scheduleProcesses()
             while (!queueList[numQueues - 1].empty())   //while the FCFS queue has more processes
             {
                 *currentP = queueList[numQueues - 1].front();
-                queueList[numQueues - 1].pop(); //pop the first process
-                if (currentP->getLastTime() > atime)
-                {
+                queueList[numQueues - 1].pop(); //pop the first process	
+                if (currentP->getLastTime() > atime && (numQueues - 2) >= 0)
+                {//cout << "if" << endl;
                     queueList[numQueues - 2].push(*currentP); //move up one queue if starving
                 }
                 else
-                {
+                {//cout << "else" << endl;
+				//************************************why are you segfaulting
                     queueList[numQueues - 1].push(*currentP); //push to the back of FCFS if !starving
-                }
+                }//cout << "after else" << endl;
             }
         }
         cout << "before currentP2" << endl;
