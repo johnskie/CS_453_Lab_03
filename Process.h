@@ -33,6 +33,7 @@ public:
     void setDeadline(int t);
     void setIO(int t);
     void setBurstRemaining(int t);
+	void toString();
 
 };
 #endif
