@@ -62,7 +62,7 @@ int Process::getBurstRemaining()
 
 bool Process::isComplete()
 {
-    return this->burstRemaining < 1);
+    return this->burstRemaining < 1;
 }
 
 void Process::decrementTime()
@@ -108,6 +108,7 @@ void Process::setBurstRemaining(int in)
 {
     this->burstRemaining = in;
 }
+
 
 
 

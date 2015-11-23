@@ -85,6 +85,12 @@ class rts {
 				
 				pch = strtok (str," ");
 				int count = 1;
+				
+				bool something = (pch == NULL);
+				
+				cout << "pch is null: " << something << endl;
+				cout << "count: " << count << endl;
+				
 				while(pch!=NULL && count < 6){
 					if ( atoi(pch) != 0 ) { // make sure it is a number
 						if (count == 1)
@@ -109,6 +115,7 @@ class rts {
 
 			return 0;
 		};
+		
 		//utilize priority queue, tiebreaker = earliest deadline, grab with .top, sorting doesnt matter, define that tb is earliest deadline
 		// final check is PID,
 		// method to actually run the scheduler
