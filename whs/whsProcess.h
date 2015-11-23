@@ -18,6 +18,7 @@ class whsProcess {
 		int doneWaiting;
 		int finishTime;
 		int priority;
+		int originalpriority;
 		int agefactor;
 		int age;
 
@@ -38,6 +39,7 @@ class whsProcess {
 			this->arrival = arrival;
 			this->timeRemaining = burst;
 			this->priority = priority;
+			this->originalpriority = priority;
 			this->doneWaiting = 0;
 			this->finishTime = 0;
 			this->agefactor = agefactor;
@@ -53,6 +55,7 @@ class whsProcess {
 			arrival = p.arrival;
 			timeRemaining = p.timeRemaining;
 			priority = p.priority;
+			originalpriority = p.originalpriority;
 			doneWaiting = p.doneWaiting;
 			age = p.age;
 			agefactor = p.agefactor;
@@ -66,6 +69,7 @@ class whsProcess {
 			arrival = p.arrival;
 			timeRemaining = p.timeRemaining;
 			priority = p.priority;
+			originalpriority = p.originalpriority;
 			doneWaiting = p.doneWaiting;
 			finishTime = p.finishTime;
 			return *this;

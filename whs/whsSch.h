@@ -23,6 +23,7 @@ class whsSch {
 		int ageouttime;
 		vector<whsProcess> lowband;
 		vector<whsProcess> highband;
+		vector<whsProcess> waitQueue;
 		bool interrupt;
 		int thetime;
 	public:
@@ -51,7 +52,7 @@ class whsSch {
 		} whsSortCriteria;
 		
 		int loadinput(char *filename) {
-		ifstream testfile(filename); 
+			ifstream testfile(filename); 
 			//make sure file exists before calling sed
 			if (!testfile) {
 				cerr << "error loading input file!\n";
@@ -110,13 +111,13 @@ class whsSch {
 			std::sort(future_list.begin(),future_list.end(),whsSortCriteria);
 			
 			for(int i = 0; i < future_list.size(); i++){
-				cout << "pid: " << future_list.at(i).getPid() << endl;
-				cout << "priority: " << future_list.at(i).priority << endl;
-				/*if(future_list.at(i).priority > 49){
+				//cout << "pid: " << future_list.at(i).getPid() << endl;
+				//cout << "priority: " << future_list.at(i).priority << endl;
+				if(future_list.at(i).priority > 49){
 					highband.push_back(future_list[i]);
 				}else{
 					lowband.push_back(future_list[i]);
-				}*/
+				}
 			}
 			cout << "==============band stuff start============"<< endl;
 			for(int i = 0; i < highband.size(); i++){
@@ -137,10 +138,54 @@ class whsSch {
 		
 		void run(){
 			bool done = false;
-			//while(!done){
+			int toRemove=0;
+			while(!done){
+				vector<whsProcess> temp;
+				if(!highband.empty()){
+					for(int i = 0; i < highband.size(); i++) {
+						if(highband[i].arrival <= thetime){
+							if(temp.empty()){//if the temp is empty just push it on
+								temp.push_back(highband[i]);
+								toRemove=i;
+							}else if(temp[0].priority < highband[i].priority){//else compare to see who has a higher priority
+								temp.pop_back();
+								temp.push_back(highband[i]);
+								toRemove=i;
+							}
+						}
+					}
+					if(!temp.empty()){
+						highband.erase(highband.begin() + toRemove);
+					}
+				}
+				if(temp.empty() && !lowband.empty()){
+					for(int i = 0; i < lowband.size(); i++) {
+						if(lowband[i].arrival <= thetime){
+							if(temp.empty()){//if the temp is empty just push it on
+								temp.push_back(lowband[i]);
+								toRemove=i;
+							}else if(temp[0].priority < lowband[i].priority){//else compare to see who has a higher priority
+								temp.pop_back();
+								temp.push_back(lowband[i]);
+								toRemove=i;
+							}
+						}
+					}
+					if(!temp.empty()){
+						lowband.erase(lowband.begin() + toRemove);
+					}
+				}else{
+					//some final code stuff
+				}
 				
-			//}
-			
+				for(int i =0;i< timeQ; i++){
+					
+				}
+				
+				
+				//gotta load in the proper one to perform for the timequantum or until done
+				
+			}
 		}
 		
 		void dosomeschedulestuff(){
