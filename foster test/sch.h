@@ -8,6 +8,7 @@
 #include <cstring>
 #include <string>
 #include "mfqsProcess.h"
+#include <ctime>
 
 
 using namespace std;
@@ -23,16 +24,18 @@ class sch {
 		vector<mfqsProcess> queues[5]; 	
 		bool interrupt;
 		int thetime;
+		double updateDuration;
+		double runDuration;
+		double rrDuration;
+		double fcfsDuration;
+		double updateClockDuration;
 		
 	public:
 
 		sch(int time, int number,int agefactor) 
 		{ 
 			cpu_hist.resize(100000);
-			cout << "before thisloop" << endl;
-						queue_total = number;
-			cout << "queue_total: " << queue_total << endl;
-
+			queue_total = number;
 			for (int i=0;i<queue_total;i++){
 				queues[i].resize(100);
 			}cout << "after the loop" << endl;
@@ -83,8 +86,6 @@ class sch {
 			for(unsigned int i=0; i < input.size() ; i++) {
 				int pid=0,burst=0,arrv=0,priorty=0;
 				char *pch;
-				/*char str[ strlen(input[i].c_str())+1 ];
-				strcpy (str,input[i].c_str());*/
 				char *str = new char[strlen(input[i].c_str())+1];
 				strcpy (str,input[i].c_str());
 				
@@ -116,8 +117,9 @@ class sch {
 		
 		void UPDATE(){
 			// aging
-			//vector<mfqsProcess>::iterator it = queues[this->queue_total - 1].begin();
-			//for(it = queues[this->queue_total - 1].begin(); it != queues[this->queue_total - 1].end(); it++){
+			std::clock_t start;
+			start = std::clock();
+			
 			mfqsProcess* it = &queues[this->queue_total-1][0];
 			for(unsigned int i=0; i<queues[this->queue_total-1].size(); i++){
 				it = &queues[this->queue_total-1][i];
@@ -132,30 +134,24 @@ class sch {
 				}
 			}
 			// future cheching
-			//mfqsProcess* it = &future_list[0];
 			for(unsigned int i=0; i < future_list.size() ; i++){
 				it= &future_list[i];
 				if(thetime >= it->arrival)
 				{
-					//cout << "new proc from future " << endl << *it << endl;
 					queues[0].push_back(*it);
 					future_list.erase( future_list.begin()+i );
 					if( current_queue != 0)
 						interrupt = true;
 				}	
 			}	
+			updateDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		}
 		
 		void run(){
+			std::clock_t start;
+			start = std::clock();
 			bool done = false;
-			//int test=0;
 			while(!done){
-				/*cout << "?" << endl;
-				cin >> test;
-				if (test==1)
-					exit(1);
-				if (test==0)
-					print_all(0);*/
 				interrupt = false;
 				for( int i=0; i < queue_total && !interrupt ; i++ ) {
 					current_queue = i;
@@ -164,10 +160,10 @@ class sch {
 					else {
 						if(!queues[i].empty() && i == queue_total-1)
 							do_fcfs(i);
-						else //evertying empty
+						else //everything empty
 							if (!future_list.empty()){
 								update_clock();
-								//cpu_hist.push_back(-1);
+								cpu_hist.push_back(-1);
 							}
 							else{
 								bool allEmpty=true;
@@ -181,12 +177,15 @@ class sch {
 					}
 				}
 			}
+			runDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 			print_all(0);
 		};
 		
 		
 		int do_rr_q(int i){
 			//cout << "do_rr_q(" << i << ")..." << endl;
+			std::clock_t start;
+			start = std::clock();
 			int subtime = 0;
 			while(!interrupt && !queues[i].empty()){
 				mfqsProcess* first = &queues[i][0];
@@ -195,7 +194,7 @@ class sch {
 				for(subtime = 0; (subtime < timeQ*(i+1)) && !interrupt && first->timeRemaining > 0; subtime++){
 					//cout << "pid " << first->getPid() << " remaining " << first->timeRemaining << endl; 	
 					first->timeRemaining--;
-					//cpu_hist.push_back(first->getPid());
+					cpu_hist.push_back(first->getPid());
 					update_clock(); //calls update;
 					first = &queues[i][0];
 				}			
@@ -208,15 +207,18 @@ class sch {
 				}
 				queues[i].erase( queues[i].begin() );
 			}
+			
+			rrDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 			return (int)interrupt;
 		};
 		int do_fcfs(int i) {
-				//cout << "do_fcfs(" << i << ")..." << endl; 		
+			std::clock_t start;
+			start = std::clock();
 			while(!interrupt && !queues[i].empty()){
 				mfqsProcess* first = &queues[i][0];
 				for(; !interrupt && first->timeRemaining > 0 ;){
 					first->timeRemaining--;
-					//cpu_hist.push_back(first->getPid());
+					cpu_hist.push_back(first->getPid());
 					update_clock();
 					first = &queues[i][0];
 				}
@@ -226,12 +228,17 @@ class sch {
 					queues[i].erase( queues[i].begin() );
 				}
 			}
+			fcfsDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 			return (int)interrupt;
 		};
 		void update_clock(){
-			//cout << "clock "<< thetime+1 <<endl;
+			std::clock_t start;
+			start = std::clock();
+
 			thetime++;
 			UPDATE();
+			
+			updateClockDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		};
 		void print_all(int k){
 			vector<mfqsProcess>::iterator fut;
@@ -247,9 +254,15 @@ class sch {
 				}
 			}
 			cout << "CPU history" <<endl;
-			//for(unsigned int i=0; i<cpu_hist.size(); i++){
-			//	cout << cpu_hist[i] << " ";
-			//} cout << endl;
+			for(unsigned int i=0; i<cpu_hist.size(); i++){
+				cout << cpu_hist[i] << " ";
+			} cout << endl;
+			cout << "times" << endl;
+		cout << "updateDuration: " << updateDuration << endl;
+		cout << "runDuration: " << runDuration << endl;
+		cout << "rrDuration: " << rrDuration << endl;
+		cout << "fcfsDuration: " << fcfsDuration << endl;
+		cout << "updateClockDuration: " << updateClockDuration << endl;
 		};
 	
 		void stats() {
@@ -267,7 +280,6 @@ class sch {
 			cout << "Average Turnaround Time: " << avgTurn << endl;
 			cout << "Average Waiting Time: " << avgWait << endl;
 		
-			//cout << avgTurn << "\t" << avgWait << endl;
 		};
 };
 

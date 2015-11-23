@@ -49,7 +49,7 @@ vector<Process> readInFile(char* filename){
 }
 
 vector<Process> mfqsCleanAndSort(vector<Process> in){
-	int j = 0;
+	/*int j = 0;
 	bool swapped = true;
 	while(swapped){
 		swapped = false;
@@ -59,6 +59,6 @@ vector<Process> mfqsCleanAndSort(vector<Process> in){
 				in[i-1].swap(in[i]);
 			}
 		}
-	}
+	}*/
 }
 
