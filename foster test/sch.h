@@ -24,18 +24,13 @@ class sch {
 		vector<mfqsProcess> queues[5]; 	
 		bool interrupt;
 		int thetime;
-		double updateDuration;
-		double runDuration;
-		double rrDuration;
-		double fcfsDuration;
-		double updateClockDuration;
 		
 	public:
 
-		sch(int time, int number,int agefactor) 
+		sch(int time, int numberOfQueues,int agefactor) 
 		{ 
 			cpu_hist.resize(100000);
-			queue_total = number;
+			queue_total = numberOfQueues;
 			for (int i=0;i<queue_total;i++){
 				queues[i].resize(100);
 			}cout << "after the loop" << endl;
@@ -116,10 +111,7 @@ class sch {
 		};
 		
 		void UPDATE(){
-			// aging
-			std::clock_t start;
-			start = std::clock();
-			
+			// aging		
 			mfqsProcess* it = &queues[this->queue_total-1][0];
 			for(unsigned int i=0; i<queues[this->queue_total-1].size(); i++){
 				it = &queues[this->queue_total-1][i];
@@ -144,12 +136,9 @@ class sch {
 						interrupt = true;
 				}	
 			}	
-			updateDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		}
 		
 		void run(){
-			std::clock_t start;
-			start = std::clock();
 			bool done = false;
 			while(!done){
 				interrupt = false;
@@ -177,15 +166,12 @@ class sch {
 					}
 				}
 			}
-			runDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 			print_all(0);
 		};
 		
 		
 		int do_rr_q(int i){
 			//cout << "do_rr_q(" << i << ")..." << endl;
-			std::clock_t start;
-			start = std::clock();
 			int subtime = 0;
 			while(!interrupt && !queues[i].empty()){
 				mfqsProcess* first = &queues[i][0];
@@ -208,12 +194,9 @@ class sch {
 				queues[i].erase( queues[i].begin() );
 			}
 			
-			rrDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 			return (int)interrupt;
 		};
 		int do_fcfs(int i) {
-			std::clock_t start;
-			start = std::clock();
 			while(!interrupt && !queues[i].empty()){
 				mfqsProcess* first = &queues[i][0];
 				for(; !interrupt && first->timeRemaining > 0 ;){
@@ -228,17 +211,11 @@ class sch {
 					queues[i].erase( queues[i].begin() );
 				}
 			}
-			fcfsDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 			return (int)interrupt;
 		};
 		void update_clock(){
-			std::clock_t start;
-			start = std::clock();
-
 			thetime++;
 			UPDATE();
-			
-			updateClockDuration += ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		};
 		void print_all(int k){
 			vector<mfqsProcess>::iterator fut;
@@ -257,12 +234,6 @@ class sch {
 			for(unsigned int i=0; i<cpu_hist.size(); i++){
 				cout << cpu_hist[i] << " ";
 			} cout << endl;
-			cout << "times" << endl;
-		cout << "updateDuration: " << updateDuration << endl;
-		cout << "runDuration: " << runDuration << endl;
-		cout << "rrDuration: " << rrDuration << endl;
-		cout << "fcfsDuration: " << fcfsDuration << endl;
-		cout << "updateClockDuration: " << updateClockDuration << endl;
 		};
 	
 		void stats() {
