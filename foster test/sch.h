@@ -24,16 +24,17 @@ class sch {
 		vector<mfqsProcess> queues[5]; 	
 		bool interrupt;
 		int thetime;
+
 		
 	public:
 
-		sch(int time, int numberOfQueues,int agefactor) 
+		sch(int time, int number,int agefactor) 
 		{ 
 			cpu_hist.resize(100000);
-			queue_total = numberOfQueues;
-			for (int i=0;i<queue_total;i++){
-				queues[i].resize(100);
-			}cout << "after the loop" << endl;
+			queue_total = number;
+			//for (int i=0;i<queue_total;i++){
+			//	queues[i].resize(100);
+			//}cout << "after the loop" << endl;
 			thetime = 0;
 			timeQ = time;
 			interrupt = false;
@@ -216,6 +217,7 @@ class sch {
 		void update_clock(){
 			thetime++;
 			UPDATE();
+			
 		};
 		void print_all(int k){
 			vector<mfqsProcess>::iterator fut;

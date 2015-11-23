@@ -13,15 +13,45 @@
 using namespace std;
 class whsSch {
 	protected:
+		vector<whsProcess> future_list;
+		vector<whsProcess> done_list;
+		vector<int> cpu_hist;
+		int timeQ;
+		int queue_total;
+		int current_queue;
+		int agepromotion;
+		int ageouttime;
+		vector<whsProcess> lowband;
+		vector<whsProcess> highband;
+		bool interrupt;
+		int thetime;
 	public:
 	
-		whsSch(){
-		
+		whsSch(int timeQuantum ){
+			cpu_hist.resize(100000);
+			thetime = 0;
+			timeQ = timeQuantum;
+			interrupt = false;
+			current_queue = 0;
+			this->agepromotion = 10;
+			this->ageouttime = 100;
 		};
 		
-		int loadinput(char *filename) {
+		class proxyCompareArrival {
+			whsSch& that;
+			public:
+			proxyCompareArrival(whsSch &h) : that(h) {}
+			bool operator()(whsProcess const &p1,whsProcess const &p2) const {
+				return (p1.arrival  <= p2.arrival );
+			}
+		};
+		struct sortclass{
+			bool operator() (whsProcess i, whsProcess j){return(i.arrival < j.arrival || (i.arrival == j.arrival && i.priority < j.priority) || 
+			(i.arrival == j.arrival && i.priority == j.priority && i.getPid() < j.getPid()));}
+		} whsSortCriteria;
 		
-			ifstream testfile(filename); 
+		int loadinput(char *filename) {
+		ifstream testfile(filename); 
 			//make sure file exists before calling sed
 			if (!testfile) {
 				cerr << "error loading input file!\n";
@@ -72,11 +102,32 @@ class whsSch {
 				}
 				delete[] str;
 				if (pid != 0)
-					future_list.push_back(mfqsProcess(pid,burst,arrv,priorty,agefactor));
+					future_list.push_back(whsProcess(pid,burst,arrv,priorty,agepromotion));
 			}
 				//sort( future_list.begin(), future_list.end() , proxyCompareArrival(*this) );
 			//print_all(0);
 			
+			std::sort(future_list.begin(),future_list.end(),whsSortCriteria);
+			
+			for(int i = 0; i < future_list.size(); i++){
+				cout << "pid: " << future_list.at(i).getPid() << endl;
+				cout << "priority: " << future_list.at(i).priority << endl;
+				/*if(future_list.at(i).priority > 49){
+					highband.push_back(future_list[i]);
+				}else{
+					lowband.push_back(future_list[i]);
+				}*/
+			}
+			cout << "==============band stuff start============"<< endl;
+			for(int i = 0; i < highband.size(); i++){
+				cout << highband.at(i).getPid() << endl;
+			}			cout << "=========================="<< endl;
+
+			for(int i = 0; i < lowband.size(); i++){
+				cout << lowband.at(i).getPid() << endl;
+			}
+						cout << "============band stuff end=============="<< endl;
+
 			return 0;
 		};
 		
@@ -85,6 +136,10 @@ class whsSch {
 		}
 		
 		void run(){
+			bool done = false;
+			//while(!done){
+				
+			//}
 			
 		}
 		
