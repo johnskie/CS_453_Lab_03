@@ -114,9 +114,9 @@ class whsSch {
 			std::sort(future_list.begin(),future_list.end(),whsSortCriteria);
 			
 			for(int i = 0; i < future_list.size(); i++){
-				if(future_list.at(i).priority > 49){
+				if(future_list.at(i).priority > 49&& future_list.at(i).burst >0){
 					highband.push_back(future_list[i]);
-				}else{
+				}else if(future_list.at(i).burst >0){
 					lowband.push_back(future_list[i]);
 				}
 			}
@@ -135,7 +135,7 @@ class whsSch {
 					}
 					highband[i].AGE();
 					//if it has reached the ageout, boost priority
-					if(highband[i].age == ageouttime){
+					if(highband[i].age >= ageouttime){
 						highband[i].priority += 10;
 						highband[i].age = 0;
 						if(highband[i].priority > 100){
@@ -155,7 +155,7 @@ class whsSch {
 					}
 					lowband[i].AGE();
 					//if it has reached the ageout, boost priority
-					if(lowband[i].age == ageouttime){
+					if(lowband[i].age >= ageouttime){
 						lowband[i].priority += 10;
 						lowband[i].age = 0;
 						if(lowband[i].priority > 50){
@@ -213,11 +213,24 @@ class whsSch {
 					}
 					//if both bands are empty we'll finsih up here
 				}
+				
+				/*if(done_list.size() ==53){
+				cout << thetime << endl;
+					cout << "highband size: " << highband.size() << endl;
+					cout << "lowband size: " << lowband.size() << endl;
+					cout << "is temp empty: " << temp.empty() << endl;
+					//sleep(1);
+				}*/
+				/*if(thetime >= 5922){
+				for(int i =0;i<highband.size
+					sleep(1);
+				}*/
+				
 				if(!temp.empty()){
 					int processTicks = 0;
 					//cout << "timeq: " << timeQ << endl;
 					//cout<< "empty temp var: " << temp.empty() << endl;
-					if(!temp.empty()){
+					
 						while(processTicks < timeQ && 0 < temp[0].timeRemaining){
 							if(processTicks == timeQ-2 && temp[0].IO > 0){
 								//on the second to last tickk, to IO. i should review this
@@ -250,11 +263,12 @@ class whsSch {
 							highband.push_back(temp[0]);
 							temp.erase(temp.begin());
 						}
-					}
+					
 				//if we don't have any available but the low or highband aren't empty. just move a clock tick forward
 				}else if(!highband.empty() || !lowband.empty() && temp.empty()){
 					UPDATE();
 					thetime++;
+					cout << "aint processing shit" << endl;
 				}else{
 				cout << "were done muthafucka" << endl;
 					done=true;
