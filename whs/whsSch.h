@@ -24,6 +24,7 @@ class whsSch {
 		vector<whsProcess> lowband;
 		vector<whsProcess> highband;
 		vector<whsProcess> waitQueue;
+		vector<whsProcess> temp;
 		bool interrupt;
 		int thetime;
 	public:
@@ -80,14 +81,14 @@ class whsSch {
 			//all lines loaded into string vector :input:
 			//now parse through string vector and make mfqsProcess vector
 			for(unsigned int i=0; i < input.size() ; i++) {
-				int pid=0,burst=0,arrv=0,priorty=0;
+				int pid=0,burst=0,arrv=0,priorty=0,IO=0;
 				char *pch;
 				char *str = new char[strlen(input[i].c_str())+1];
 				strcpy (str,input[i].c_str());
 				
 				pch = strtok (str," ");
 				int count = 1;
-				while(pch!=NULL && count < 6){
+				while(pch!=NULL && count < 7){
 					if ( atoi(pch) != 0 ) { // make sure it is a number
 						if (count == 1)
 							pid=atoi(pch);
@@ -97,13 +98,15 @@ class whsSch {
 							arrv=atoi(pch);
 						if (count == 4)
 							priorty=atoi(pch);
+						if (count == 6)
+							IO=atoi(pch);
 					}
 					count++;
 					pch = strtok(NULL," ");
 				}
 				delete[] str;
 				if (pid != 0)
-					future_list.push_back(whsProcess(pid,burst,arrv,priorty,agepromotion));
+					future_list.push_back(whsProcess(pid,burst,arrv,priorty,agepromotion,IO));
 			}
 				//sort( future_list.begin(), future_list.end() , proxyCompareArrival(*this) );
 			//print_all(0);
@@ -111,8 +114,9 @@ class whsSch {
 			std::sort(future_list.begin(),future_list.end(),whsSortCriteria);
 			
 			for(int i = 0; i < future_list.size(); i++){
-				//cout << "pid: " << future_list.at(i).getPid() << endl;
-				//cout << "priority: " << future_list.at(i).priority << endl;
+				cout << "pid: " << future_list.at(i).getPid() << " ";
+				cout << "priority: " << future_list.at(i).priority << " ";
+				cout << "IO: " << future_list.at(i).IO << endl;
 				if(future_list.at(i).priority > 49){
 					highband.push_back(future_list[i]);
 				}else{
@@ -133,15 +137,31 @@ class whsSch {
 		};
 		
 		void UPDATE(){
-		
+			for(int i = 0; i < highband.size();i++){
+				if(highband[i].IO > 0){
+					
+				}
+				highband[i].AGE();
+				if(highband[i].age == ageouttime){
+					//promote
+				}
+			}
+			for(int i = 0; i < lowband.size();i++){
+				lowband[i].AGE();
+				if(lowband[i].age == ageouttime){
+					//promote
+				}
+			}
 		}
 		
 		void run(){
 			bool done = false;
 			int toRemove=0;
+			cout<<"gonna try and find the process to run" << endl;
 			while(!done){
-				vector<whsProcess> temp;
+				//if we're out of highband, just try the low band
 				if(!highband.empty()){
+				//see if the high band has any arrivals that need to be run
 					for(int i = 0; i < highband.size(); i++) {
 						if(highband[i].arrival <= thetime){
 							if(temp.empty()){//if the temp is empty just push it on
@@ -154,14 +174,16 @@ class whsSch {
 							}
 						}
 					}
+					//take the value out of highband that was taken
 					if(!temp.empty()){
 						highband.erase(highband.begin() + toRemove);
 					}
 				}
+				//try a low burst if the high didn't have any to load and the lowband isn't empty
 				if(temp.empty() && !lowband.empty()){
 					for(int i = 0; i < lowband.size(); i++) {
 						if(lowband[i].arrival <= thetime){
-							if(temp.empty()){//if the temp is empty just push it on
+							if(temp.empty()){//if the temp is empty just push it on the temp variable
 								temp.push_back(lowband[i]);
 								toRemove=i;
 							}else if(temp[0].priority < lowband[i].priority){//else compare to see who has a higher priority
@@ -171,20 +193,25 @@ class whsSch {
 							}
 						}
 					}
+					//take the value out of the lowband that was taken
 					if(!temp.empty()){
 						lowband.erase(lowband.begin() + toRemove);
 					}
+				//if both bands are empty we'll finsih up here
 				}else{
 					//some final code stuff
 				}
-				
-				for(int i =0;i< timeQ; i++){
-					
+				cout<<"found one maybe" << endl;
+				int processTicks = 0;
+				while(processTicks < timeQ && processTicks < temp[0].burst){
+					thetime++;
+					temp[0].burst--;
+					UPDATE();
 				}
-				
+				//will have to load the temp back in to the proper spot if it still has a burst
 				
 				//gotta load in the proper one to perform for the timequantum or until done
-				
+				done=true;
 			}
 		}
 		

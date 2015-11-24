@@ -21,6 +21,7 @@ class whsProcess {
 		int originalpriority;
 		int agefactor;
 		int age;
+		int IO;
 
 		whsProcess() {
 			this->pid = 0;
@@ -32,8 +33,9 @@ class whsProcess {
 			this->priority = 0;
 			this->agefactor = 5;
 			this->age = 0;
+			this->IO = 0;
 		};
-		whsProcess(int pid, int burst, int arrival, int priority, int agefactor) {
+		whsProcess(int pid, int burst, int arrival, int priority, int agefactor, int IO) {
 			this->pid = pid;
 			this->burst = burst;
 			this->arrival = arrival;
@@ -44,6 +46,7 @@ class whsProcess {
 			this->finishTime = 0;
 			this->agefactor = agefactor;
 			this->age = 0;
+			this->IO = IO;
 		};
 		~whsProcess() {
 			
@@ -60,6 +63,7 @@ class whsProcess {
 			age = p.age;
 			agefactor = p.agefactor;
 			finishTime = p.finishTime;
+			IO = p.IO;
 		};
 		whsProcess& operator= (const whsProcess &p){
 			pid = p.getPid();
@@ -72,6 +76,7 @@ class whsProcess {
 			originalpriority = p.originalpriority;
 			doneWaiting = p.doneWaiting;
 			finishTime = p.finishTime;
+			IO = p.IO;
 			return *this;
 		};
 		bool operator== (const whsProcess &p) {
