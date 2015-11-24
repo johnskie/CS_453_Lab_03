@@ -31,7 +31,7 @@ class whsSch {
 	
 		whsSch(int timeQuantum ){
 			cpu_hist.resize(100000);
-			thetime = 0;
+			thetime = 540;
 			timeQ = timeQuantum;
 			interrupt = false;
 			current_queue = 0;
@@ -114,42 +114,54 @@ class whsSch {
 			std::sort(future_list.begin(),future_list.end(),whsSortCriteria);
 			
 			for(int i = 0; i < future_list.size(); i++){
-				cout << "pid: " << future_list.at(i).getPid() << " ";
-				cout << "priority: " << future_list.at(i).priority << " ";
-				cout << "IO: " << future_list.at(i).IO << endl;
 				if(future_list.at(i).priority > 49){
 					highband.push_back(future_list[i]);
 				}else{
 					lowband.push_back(future_list[i]);
 				}
 			}
-			cout << "==============band stuff start============"<< endl;
-			for(int i = 0; i < highband.size(); i++){
-				cout << highband.at(i).getPid() << endl;
-			}			cout << "=========================="<< endl;
-
-			for(int i = 0; i < lowband.size(); i++){
-				cout << lowband.at(i).getPid() << endl;
-			}
-						cout << "============band stuff end=============="<< endl;
-
 			return 0;
 		};
 		
 		void UPDATE(){
 			for(int i = 0; i < highband.size();i++){
-				if(highband[i].IO > 0){
-					
-				}
-				highband[i].AGE();
-				if(highband[i].age == ageouttime){
-					//promote
+			//if the process has arrived age it and do the IO priority boost
+				if(highband[i].arrival >= thetime){
+					if(highband[i].IO > 0){
+						highband[i].priority += highband[i].IO;
+						if(highband[i].priority > 100){
+							highband[i].priority = 99;
+						}
+					}
+					highband[i].AGE();
+					//if it has reached the ageout, boost priority
+					if(highband[i].age == ageouttime){
+						highband[i].priority += 10;
+						highband[i].age = 0;
+						if(highband[i].priority > 100){
+							highband[i].priority = 99;
+						}
+					}
 				}
 			}
 			for(int i = 0; i < lowband.size();i++){
-				lowband[i].AGE();
-				if(lowband[i].age == ageouttime){
-					//promote
+			//if the process has arrived age it and do the IO priority boost
+				if(lowband[i].arrival >= thetime){
+					if(lowband[i].IO > 0){
+						lowband[i].priority += lowband[i].IO;
+						if(lowband[i].priority > 50){
+							lowband[i].priority = 49;
+						}
+					}
+					lowband[i].AGE();
+					//if it has reached the ageout, boost priority
+					if(lowband[i].age == ageouttime){
+						lowband[i].priority += 10;
+						lowband[i].age = 0;
+						if(lowband[i].priority > 50){
+							lowband[i].priority = 49;
+						}
+					}
 				}
 			}
 		}
@@ -157,13 +169,14 @@ class whsSch {
 		void run(){
 			bool done = false;
 			int toRemove=0;
-			cout<<"gonna try and find the process to run" << endl;
+
 			while(!done){
 				//if we're out of highband, just try the low band
 				if(!highband.empty()){
 				//see if the high band has any arrivals that need to be run
 					for(int i = 0; i < highband.size(); i++) {
 						if(highband[i].arrival <= thetime){
+						//cout << "highband: " << i << endl;
 							if(temp.empty()){//if the temp is empty just push it on
 								temp.push_back(highband[i]);
 								toRemove=i;
@@ -183,6 +196,7 @@ class whsSch {
 				if(temp.empty() && !lowband.empty()){
 					for(int i = 0; i < lowband.size(); i++) {
 						if(lowband[i].arrival <= thetime){
+						//cout << "lowband: " << i << endl;
 							if(temp.empty()){//if the temp is empty just push it on the temp variable
 								temp.push_back(lowband[i]);
 								toRemove=i;
@@ -197,31 +211,61 @@ class whsSch {
 					if(!temp.empty()){
 						lowband.erase(lowband.begin() + toRemove);
 					}
-				//if both bands are empty we'll finsih up here
-				}else{
-					//some final code stuff
+					//if both bands are empty we'll finsih up here
 				}
-				cout<<"found one maybe" << endl;
-				int processTicks = 0;
-				while(processTicks < timeQ && processTicks < temp[0].burst){
-					thetime++;
-					temp[0].burst--;
+				if(!temp.empty()){
+					int processTicks = 0;
+					//cout << "timeq: " << timeQ << endl;
+					//cout<< "empty temp var: " << temp.empty() << endl;
+					if(!temp.empty()){
+						while(processTicks < timeQ && 0 < temp[0].timeRemaining){
+							if(processTicks == timeQ-2 && temp[0].IO > 0){
+								//on the second to last tickk, to IO. i should review this
+								temp[0].IO =0;
+							}
+							UPDATE();
+							thetime++;
+							temp[0].timeRemaining--;
+							processTicks++;
+						}
+						//if the timeremaining on the process is zero. put it in the finished list
+						if(temp[0].timeRemaining == 0){
+							temp[0].finishTime = thetime;
+							done_list.push_back(temp[0]);
+							cout << "finished list size: " << done_list.size() << endl;
+							temp.erase(temp.begin());
+						//else reduce it by the time it spent on the clock and put back into proper band
+						}else if(temp[0].originalpriority < 50){
+							temp[0].priority -= processTicks;
+							if(temp[0].priority < temp[0].originalpriority){
+								temp[0].priority = temp[0].originalpriority;
+							}
+							lowband.push_back(temp[0]);
+							temp.erase(temp.begin());
+						}else{
+							temp[0].priority -= processTicks;
+							if(temp[0].priority < temp[0].originalpriority){
+								temp[0].priority = temp[0].originalpriority;
+							}
+							highband.push_back(temp[0]);
+							temp.erase(temp.begin());
+						}
+					}
+				//if we don't have any available but the low or highband aren't empty. just move a clock tick forward
+				}else if(!highband.empty() || !lowband.empty() && temp.empty()){
 					UPDATE();
+					thetime++;
+				}else{
+				cout << "were done muthafucka" << endl;
+					done=true;
 				}
-				//will have to load the temp back in to the proper spot if it still has a burst
+				
+				
+				//will have to load the temp back in to the proper spot if it still has a timeRemaining
 				
 				//gotta load in the proper one to perform for the timequantum or until done
-				done=true;
+				
 			}
-		}
-		
-		void dosomeschedulestuff(){
-		
-		}
-		
-		void updateClock(){
-			thetime++;
-			UPDATE();
 		}
 };
 #endif
