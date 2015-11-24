@@ -1,4 +1,3 @@
-# http://www.haverford.edu/cmsc/course-pages/usingMake.html
 
 all : mfqs.o clock.o process.o  main.o
 	g++ -g -std=c++0x process.o clock.o mfqs.o main.o -lm -o myprogram

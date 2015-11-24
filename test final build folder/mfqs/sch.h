@@ -105,8 +105,6 @@ class sch {
 				if (pid != 0)
 					future_list.push_back(mfqsProcess(pid,burst,arrv,priorty,agefactor));
 			}
-				//sort( future_list.begin(), future_list.end() , proxyCompareArrival(*this) );
-			//print_all(0);
 			
 			return 0;
 		};
@@ -167,12 +165,13 @@ class sch {
 					}
 				}
 			}
+			#ifdef DEBUG
 			print_all(0);
+			#endif
 		};
 		
 		
 		int do_rr_q(int i){
-			//cout << "do_rr_q(" << i << ")..." << endl;
 			int subtime = 0;
 			while(!interrupt && !queues[i].empty()){
 				mfqsProcess* first = &queues[i][0];
@@ -189,7 +188,6 @@ class sch {
 					first->finishTime = thetime;
 					done_list.push_back( *first );
 				} else{
-					//cout << "moving pid " << first->getPid() << " to [" << i << "]" << endl;
 					queues[i+1].push_back( mfqsProcess(*first) ); //push
 				}
 				queues[i].erase( queues[i].begin() );
@@ -198,17 +196,23 @@ class sch {
 			return (int)interrupt;
 		};
 		int do_fcfs(int i) {
-			while(!interrupt && !queues[i].empty()){
+			while((!interrupt && !queues[i].empty()) || queues[i].size() == 0){
 				mfqsProcess* first = &queues[i][0];
+				cout <<"the fucking size: " << queues[i].size() << endl;
+				sleep(3);
 				for(; !interrupt && first->timeRemaining > 0 ;){
 					first->timeRemaining--;
 					cpu_hist.push_back(first->getPid());
 					update_clock();
+					cout <<"the fucking size: " << queues[i].size() << endl;
 					first = &queues[i][0];
 				}
 				if (first->timeRemaining <= 0 ){
 					first->finishTime = thetime;
 					done_list.push_back( *first );
+					if(queues[i].size() == 1){
+						interrupt = true;
+					}
 					queues[i].erase( queues[i].begin() );
 				}
 			}
@@ -242,6 +246,7 @@ class sch {
 			double avgTurn = 0;
 			double avgWait = 0;
 			double count = 0;
+			int np = done_list.size();
 			vector<mfqsProcess>::iterator it;
 			for(it = done_list.begin(); it != done_list.end(); it++){
 				count++;
@@ -252,6 +257,7 @@ class sch {
 			avgWait /= count;
 			cout << "Average Turnaround Time: " << avgTurn << endl;
 			cout << "Average Waiting Time: " << avgWait << endl;
+			cout << "Total # of Processes Scheduled: " << np << endl;
 		
 		};
 };

@@ -25,20 +25,11 @@ doover:
 			cout << "input file error. please input as ./program [input in parenthesis]" << endl;
 			return  0;
 		}
-		cout << "1" << endl;
 		sch sched(time,numberOfQueues,agefactor);
-		cout << "2" << endl;
 		sched.loadinput(argv[1]);
-		cout << "3" << endl;
 		sched.UPDATE();
-		cout << "4" << endl;
-		clock_t start = clock();
 		sched.run();
-		double duration = ( clock() - start ) / (double) CLOCKS_PER_SEC;
-		cout << "duration: " << duration << endl;
-		cout << "5" << endl;
 		sched.stats();
-		cout << "6" << endl;
 		exit(0);
 	return 0;
 }

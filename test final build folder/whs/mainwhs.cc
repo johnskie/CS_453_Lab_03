@@ -20,7 +20,7 @@ tryagain:
 		sched.loadinput(argv[1]);
 		sched.UPDATE();
 		sched.run();
-		//sched.stats();
+		sched.stats();
 		exit(0);
 	return 0;
 }

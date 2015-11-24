@@ -31,7 +31,7 @@ class whsSch {
 	
 		whsSch(int timeQuantum ){
 			cpu_hist.resize(100000);
-			thetime = 540;
+			thetime = 0;
 			timeQ = timeQuantum;
 			interrupt = false;
 			current_queue = 0;
@@ -108,8 +108,6 @@ class whsSch {
 				if (pid != 0)
 					future_list.push_back(whsProcess(pid,burst,arrv,priorty,agepromotion,IO));
 			}
-				//sort( future_list.begin(), future_list.end() , proxyCompareArrival(*this) );
-			//print_all(0);
 			
 			std::sort(future_list.begin(),future_list.end(),whsSortCriteria);
 			
@@ -166,11 +164,7 @@ class whsSch {
 					}
 				}
 			}
-			//for(int i = 0; i < lowband.size();i++){
-			//if the process has arrived age it and do the IO priority boost
-				
-			//}
-		}
+		};
 		void UPDATE(int highestSize){
 			for(int i = 0; i < highestSize;i++){
 			//if the process has arrived age it and do the IO priority boost
@@ -209,11 +203,7 @@ class whsSch {
 					}
 				}
 			}
-			//for(int i = 0; i < lowband.size();i++){
-			//if the process has arrived age it and do the IO priority boost
-				
-			//}
-		}
+		};
 		
 		void run(){
 			bool done = false;
@@ -248,17 +238,10 @@ class whsSch {
 					if(!(toRemoveHigh < 0)){
 						temp.push_back(highband[toRemoveHigh]);
 						highband.erase(highband.begin() + toRemoveHigh);
-					}/*else if(!(toRemoveLow < 0)){
-						temp.push_back(lowband[toRemoveLow]);
-						lowband.erase(lowband.begin() + toRemoveLow);
-					}*/
+					}
 				}
 				//try a low burst if the high didn't have any to load and the lowband isn't empty
 				if(temp.empty() && !lowband.empty()){
-				/*if(done_list.size() >= 4836){
-					sleep(1);
-					cout << "inside low" << endl;
-				}*/
 					for(int i = 0; i < highestSize; i++) {
 						if(lowband[i].arrival <= thetime && i < lowband.size()){
 
@@ -286,6 +269,7 @@ class whsSch {
 				}
 				
 				if(!temp.empty()){
+					temp[0].doneWaiting = thetime;
 					int processTicks = 0;
 						while(processTicks < timeQ && 0 < temp[0].timeRemaining){
 							if(processTicks == timeQ-2 && temp[0].IO > 0){
@@ -301,7 +285,6 @@ class whsSch {
 						if(temp[0].timeRemaining == 0){
 							temp[0].finishTime = thetime;
 							done_list.push_back(temp[0]);
-							//cout << "finished list size: " << done_list.size() << endl;
 							temp.erase(temp.begin());
 						//else reduce it by the time it spent on the clock and put back into proper band
 						}else if(temp[0].originalpriority < 50){
@@ -333,6 +316,37 @@ class whsSch {
 				//gotta load in the proper one to perform for the timequantum or until done
 				
 			}
-		}
+			#ifdef DEBUG
+			print_all(0);
+			#endif
+		};
+		void print_all(int k){
+			vector<whsProcess>::iterator fut;
+			vector<whsProcess>::iterator active;
+			
+			cout << "CPU history" <<endl;
+			for(unsigned int i=0; i<cpu_hist.size(); i++){
+				cout << cpu_hist[i] << " ";
+			} cout << endl;
+		};
+		
+		void stats() {
+			double avgTurn = 0;
+			double avgWait = 0;
+			double count = 0;
+			int np = done_list.size();
+			vector<whsProcess>::iterator it;
+			for(it = done_list.begin(); it != done_list.end(); it++){
+				count++;
+				avgTurn += (it->finishTime+1 - it->arrival);
+				avgWait += (it->doneWaiting - it->arrival);
+			}
+			avgTurn /= count;
+			avgWait /= count;
+			cout << "Average Turnaround Time: " << avgTurn << endl;
+			cout << "Average Waiting Time: " << avgWait << endl;
+			cout << "Total # of Processes Scheduled: " << np << endl;
+		
+		};
 };
 #endif
