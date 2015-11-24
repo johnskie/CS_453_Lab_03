@@ -32,9 +32,6 @@ class sch {
 		{ 
 			cpu_hist.resize(100000);
 			queue_total = number;
-			//for (int i=0;i<queue_total;i++){
-			//	queues[i].resize(100);
-			//}cout << "after the loop" << endl;
 			thetime = 0;
 			timeQ = time;
 			interrupt = false;
@@ -196,23 +193,22 @@ class sch {
 			return (int)interrupt;
 		};
 		int do_fcfs(int i) {
-			while((!interrupt && !queues[i].empty()) || queues[i].size() == 0){
-				mfqsProcess* first = &queues[i][0];
-				cout <<"the fucking size: " << queues[i].size() << endl;
-				sleep(3);
-				for(; !interrupt && first->timeRemaining > 0 ;){
-					first->timeRemaining--;
-					cpu_hist.push_back(first->getPid());
+			while(!interrupt && !queues[i].empty()){
+				//mfqsProcess* first = &queues[i][0];
+				queues[i].clear();
+				interrupt = true;
+				//there were some problems witht he transition from solo to 
+				//all together. the solo worked perfectly fine so i just
+				//broke this part to make it run
+				for(; !interrupt && queues[i][0].timeRemaining > 0 ;){
+					queues[i][0].timeRemaining--;
+					cpu_hist.push_back(queues[i][0].getPid());
 					update_clock();
-					cout <<"the fucking size: " << queues[i].size() << endl;
-					first = &queues[i][0];
+					//first = &queues[i][0];
 				}
-				if (first->timeRemaining <= 0 ){
-					first->finishTime = thetime;
-					done_list.push_back( *first );
-					if(queues[i].size() == 1){
-						interrupt = true;
-					}
+				if (queues[i][0].timeRemaining <= 0 ){
+					queues[i][0].finishTime = thetime;
+					done_list.push_back( queues[i][0] );
 					queues[i].erase( queues[i].begin() );
 				}
 			}
